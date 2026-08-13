@@ -20,7 +20,7 @@ import {
   Previous / Next therefore move through actual playlist songs.
 */
 const YOUTUBE_PLAYLIST_URL =
-  "https://www.youtube.com/playlist?list=PLl2jQn4j1xPhjPgjze0Ks19_z7gT7Eq1l";
+  "https://www.youtube.com/watch?v=cBGDDBHN22U&list=PLfdfb0LKtKKs8IcyIvtsf_FfmJU-1pbI1";
 
 const FALLBACK_VIDEO_ID = "uIYFObB-yv0";
 
