@@ -522,10 +522,29 @@ h1 span {
 }
 
 @media (max-width: 760px) {
+  .app {
+    min-height: 100svh;
+    height: 100svh;
+    overflow: hidden;
+  }
+
+  .bus-bg img {
+    object-position: center center;
+    min-width: 100%;
+    min-height: 100%;
+  }
+
   .topbar {
-    top: 15px;
-    left: 16px;
-    right: 16px;
+    top: max(12px, env(safe-area-inset-top));
+    left: 12px;
+    right: 12px;
+    align-items: flex-start;
+  }
+
+  .clock {
+    font-size: 11px;
+    letter-spacing: .12em;
+    white-space: nowrap;
   }
 
   .online {
@@ -533,13 +552,15 @@ h1 span {
   }
 
   .top-actions {
-    max-width: 240px;
+    max-width: 58vw;
     gap: 5px;
   }
 
   .top-actions button {
-    padding: 7px 9px;
-    font-size: 9px;
+    padding: 6px 8px;
+    font-size: 8px;
+    line-height: 1;
+    min-height: 28px;
   }
 
   .top-actions .service-chip {
@@ -547,25 +568,50 @@ h1 span {
   }
 
   .center-content {
-    top: 45%;
-  }
-
-  h1 {
-      font-size: clamp(100px, 16vw, 210px);
+    top: 43%;
+    width: calc(100vw - 28px);
+    max-width: 620px;
   }
 
   .location-label {
-    letter-spacing: .2em;
+    margin-bottom: 13px;
+    font-size: clamp(24px, 8vw, 38px);
+    line-height: 1.05;
+    letter-spacing: .12em;
+  }
+
+  h1 {
+    /* Keep the desktop visual hierarchy, but scale it down instead of
+       letting the title become wider than a phone viewport. */
+    font-size: clamp(58px, 18vw, 100px);
+    line-height: .82;
+    letter-spacing: -.07em;
+    white-space: nowrap;
   }
 
   .route-copy {
-    line-height: 2;
-    padding: 0 20px;
+    margin-top: 17px;
+    padding: 0 8px;
+    font-size: 7px;
+    line-height: 1.8;
+    letter-spacing: .16em;
   }
 
   .memory-pill {
-    font-size: 10px;
-    padding: 10px 13px;
+    width: auto;
+    max-width: calc(100vw - 42px);
+    margin-top: 19px;
+    padding: 9px 12px;
+    gap: 8px;
+    border-radius: 16px;
+    font-size: 9px;
+    line-height: 1.35;
+    justify-content: center;
+  }
+
+  .memory-light {
+    width: 6px;
+    height: 6px;
   }
 
   .side-arrow {
@@ -573,47 +619,70 @@ h1 span {
   }
 
   .cassette-player {
-    bottom: 14px;
-    width: calc(100vw - 20px);
-    grid-template-columns: 83px minmax(0, 1fr) auto;
-    gap: 9px;
-    padding: 9px 10px;
-    border-radius: 25px;
+    left: 50%;
+    bottom: max(10px, env(safe-area-inset-bottom));
+    width: calc(100vw - 16px);
+    min-height: 0;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px;
+    border-radius: 22px;
   }
 
   .cassette-window {
-    height: 64px;
+    height: 58px;
+    border-radius: 10px;
+  }
+
+  .cassette-label {
+    left: 7px;
+    right: 7px;
+    top: 8px;
   }
 
   .cassette-label strong {
-    font-size: 9px;
+    font-size: 8px;
   }
 
   .cassette-label span {
-    font-size: 5px;
+    font-size: 4.5px;
   }
 
   .reel {
-    width: 25px;
-    height: 25px;
+    width: 23px;
+    height: 23px;
     border-width: 3px;
   }
 
   .reel i {
-    inset: 6px;
+    inset: 5px;
+    border-width: 1px;
   }
 
   .cassette-info > strong {
-    font-size: 10px;
+    font-size: 9px;
   }
 
   .cassette-info > span {
+    margin-top: 3px;
+    font-size: 6.5px;
+  }
+
+  .progress {
+    margin-top: 6px;
+  }
+
+  .time {
     font-size: 7px;
   }
 
+  .cassette-controls {
+    gap: 0;
+  }
+
   .cassette-controls button {
-    width: 27px;
-    height: 27px;
+    width: 28px;
+    height: 28px;
   }
 
   .cassette-controls .main-play {
@@ -626,13 +695,38 @@ h1 span {
   }
 
   .playlist-hint {
-    bottom: 105px;
+    bottom: 96px;
+    width: calc(100vw - 28px);
+    padding: 8px 11px;
+    font-size: 8px;
+    line-height: 1.35;
+  }
+
+  .playlist-hint span {
+    margin-left: 6px;
   }
 }
 
+/* Smaller phones */
 @media (max-width: 460px) {
+  .topbar {
+    left: 10px;
+    right: 10px;
+  }
+
   .clock {
-    font-size: 11px;
+    font-size: 10px;
+    letter-spacing: .08em;
+  }
+
+  .top-actions {
+    max-width: 62vw;
+  }
+
+  .top-actions button {
+    padding: 5px 7px;
+    font-size: 7px;
+    min-height: 25px;
   }
 
   .top-actions .outline-chip:nth-child(4) {
@@ -640,41 +734,206 @@ h1 span {
   }
 
   .top-actions .outline-chip {
+    font-size: 7px;
+  }
+
+  .center-content {
+    top: 42%;
+    width: calc(100vw - 20px);
+  }
+
+  .location-label {
+    margin-bottom: 10px;
+    font-size: clamp(21px, 7.5vw, 32px);
+    letter-spacing: .08em;
+  }
+
+  h1 {
+    font-size: clamp(50px, 17vw, 78px);
+    letter-spacing: -.075em;
+  }
+
+  .route-copy {
+    margin-top: 13px;
+    padding: 0 5px;
+    font-size: 6.5px;
+    letter-spacing: .12em;
+  }
+
+  .memory-pill {
+    max-width: calc(100vw - 30px);
+    margin-top: 15px;
+    padding: 8px 10px;
     font-size: 8px;
+    border-radius: 13px;
   }
 
   .cassette-player {
-    grid-template-columns: 67px minmax(0,1fr) auto;
+    width: calc(100vw - 12px);
+    grid-template-columns: 61px minmax(0, 1fr) auto;
+    gap: 7px;
+    padding: 7px;
+    border-radius: 19px;
   }
 
   .cassette-window {
-    height: 57px;
+    height: 52px;
   }
 
   .cassette-label {
-    left: 5px;
-    right: 5px;
-    top: 9px;
+    left: 4px;
+    right: 4px;
+    top: 7px;
   }
 
   .cassette-label strong {
-    font-size: 8px;
+    font-size: 7px;
+  }
+
+  .cassette-label span {
+    font-size: 4px;
   }
 
   .reel {
-    width: 21px;
-    height: 21px;
+    width: 19px;
+    height: 19px;
   }
 
   .reel i {
-    inset: 5px;
+    inset: 4px;
   }
 
   .cassette-info > strong {
+    font-size: 8px;
+  }
+
+  .cassette-info > span {
+    font-size: 6px;
+  }
+
+  .progress {
+    margin-top: 4px;
+  }
+
+  .cassette-controls button {
+    width: 25px;
+    height: 25px;
+  }
+
+  .cassette-controls .main-play {
+    width: 33px;
+    height: 33px;
+  }
+
+  .playlist-hint {
+    bottom: 88px;
+    width: calc(100vw - 20px);
+    font-size: 7px;
+  }
+}
+
+/* Very small phones / narrow screens */
+@media (max-width: 360px) {
+  .clock {
     font-size: 9px;
   }
 
-  .cassette-controls button:nth-child(4) {
+  .top-actions button {
+    padding: 4px 6px;
+    font-size: 6.5px;
+  }
+
+  .center-content {
+    top: 40%;
+  }
+
+  .location-label {
+    font-size: 21px;
+  }
+
+  h1 {
+    font-size: 47px;
+  }
+
+  .route-copy {
+    font-size: 6px;
+  }
+
+  .memory-pill {
+    font-size: 7px;
+  }
+
+  .cassette-player {
+    grid-template-columns: 54px minmax(0, 1fr) auto;
+  }
+
+  .cassette-window {
+    height: 48px;
+  }
+
+  .cassette-info > strong {
+    font-size: 7px;
+  }
+
+  .cassette-info > span,
+  .time {
+    font-size: 5.5px;
+  }
+
+  .cassette-controls button {
+    width: 23px;
+    height: 23px;
+  }
+
+  .cassette-controls .main-play {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+/* Landscape phones: preserve the desktop composition without overflow. */
+@media (max-width: 900px) and (orientation: landscape) {
+  .topbar {
+    top: 9px;
+  }
+
+  .center-content {
+    top: 47%;
+  }
+
+  .location-label {
+    margin-bottom: 7px;
+    font-size: 24px;
+  }
+
+  h1 {
+    font-size: clamp(48px, 11vw, 78px);
+  }
+
+  .route-copy {
+    margin-top: 8px;
+    font-size: 6px;
+  }
+
+  .memory-pill {
+    margin-top: 9px;
+    padding: 6px 10px;
+    font-size: 7px;
+  }
+
+  .cassette-player {
+    bottom: 6px;
+    width: min(620px, calc(100vw - 16px));
+    min-height: 0;
+    grid-template-columns: 70px minmax(0, 1fr) auto;
+    padding: 6px 8px;
+  }
+
+  .cassette-window {
+    height: 48px;
+  }
+
+  .playlist-hint {
     display: none;
   }
 }
