@@ -10,11 +10,34 @@ import {
   VolumeX,
 } from "lucide-react";
 
-
 const YOUTUBE_PLAYLIST_URL =
   "https://www.youtube.com/watch?v=cBGDDBHN22U&list=PLfdfb0LKtKKs8IcyIvtsf_FfmJU-1pbI1";
 
 const FALLBACK_VIDEO_ID = "uIYFObB-yv0";
+
+/*
+|--------------------------------------------------------------------------
+| HORN SOUNDS
+|--------------------------------------------------------------------------
+| Put these files inside:
+|
+| public/
+|   sounds/
+|     horn-1.mp3
+|     horn-2.mp3
+|     horn-3.mp3
+|     horn-4.mp3
+|
+| Every time HORN OK PLEASE is clicked, one random horn will play.
+|--------------------------------------------------------------------------
+*/
+
+const HORN_SOUNDS = [
+  "/sounds/sound1.mp3",
+  "/sounds/sound2.mp3",
+  "/sounds/sound3.mp3",
+  "/sounds/sound4.mp3",
+];
 
 const busMemories = [
   "कृपया बस में धूम्रपान न करें, ड्राइवर साहब पहले ही धुएँ में हैं।",
@@ -37,6 +60,7 @@ const busMemories = [
 
 function playlistIdFromUrl(value) {
   if (!value) return "";
+
   try {
     const url = new URL(value);
     return url.searchParams.get("list") || "";
@@ -48,8 +72,13 @@ function playlistIdFromUrl(value) {
 
 function formatTime(value) {
   if (!Number.isFinite(value)) return "0:00";
+
   const seconds = Math.max(0, Math.floor(value));
-  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(
+    2,
+    "0",
+  )}`;
 }
 
 function getIndiaTime() {
@@ -70,6 +99,7 @@ function loadYouTubeAPI() {
     }
 
     const oldCallback = window.onYouTubeIframeAPIReady;
+
     window.onYouTubeIframeAPIReady = () => {
       oldCallback?.();
       resolve();
@@ -102,17 +132,28 @@ function App() {
   const playerRef = useRef(null);
   const progressTimer = useRef(null);
 
+  // Horn audio reference
+  const hornAudioRef = useRef(null);
+
+  // Used to safely clean up horn timers
+  const hornTimeoutRef = useRef(null);
+
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(false);
   const [current, setCurrent] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [songTitle, setSongTitle] = useState("Chura Liya Hai Tumne Jo Dil Ko");
+  const [songTitle, setSongTitle] = useState(
+    "Chura Liya Hai Tumne Jo Dil Ko",
+  );
   const [songArtist, setSongArtist] = useState("पुराना सफ़र • YouTube");
   const [playlistIndex, setPlaylistIndex] = useState(0);
   const [memoryIndex, setMemoryIndex] = useState(0);
   const [clock, setClock] = useState(getIndiaTime());
   const [showPlaylistHint, setShowPlaylistHint] = useState(false);
+
+  // NEW: controls the horn animation
+  const [hornActive, setHornActive] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -158,18 +199,24 @@ function App() {
         height: "180",
         videoId: FALLBACK_VIDEO_ID,
         playerVars,
+
         events: {
           onReady: (event) => {
             setReady(true);
 
             const player = event.target;
-            // Force the exact supplied video into the player. This avoids
-            // Mix/RD playlist initialization preventing playback.
+
+            // Force the exact supplied video into the player.
+            // This avoids Mix/RD playlist initialization preventing playback.
             if (isMix || !playlistId) {
               player.cueVideoById(FALLBACK_VIDEO_ID);
             }
+
             const title = player.getVideoData?.().title;
-            if (title) setSongTitle(title);
+
+            if (title) {
+              setSongTitle(title);
+            }
 
             if (!playlistId) {
               setShowPlaylistHint(true);
@@ -191,13 +238,17 @@ function App() {
 
                 if (playlistId) {
                   const index = player.getPlaylistIndex?.();
+
                   if (Number.isInteger(index) && index >= 0) {
                     setPlaylistIndex(index);
                   }
                 }
 
                 const title = player.getVideoData?.().title;
-                if (title) setSongTitle(title);
+
+                if (title) {
+                  setSongTitle(title);
+                }
               }, 250);
             } else {
               clearInterval(progressTimer.current);
@@ -205,7 +256,10 @@ function App() {
 
             if (state === window.YT.PlayerState.ENDED && playlistId) {
               const index = player.getPlaylistIndex?.();
-              if (Number.isInteger(index)) setPlaylistIndex(index);
+
+              if (Number.isInteger(index)) {
+                setPlaylistIndex(index);
+              }
             }
           },
 
@@ -219,14 +273,26 @@ function App() {
 
     return () => {
       disposed = true;
+
       clearInterval(progressTimer.current);
+
+      // Cleanup horn
+      clearTimeout(hornTimeoutRef.current);
+
+      if (hornAudioRef.current) {
+        hornAudioRef.current.pause();
+        hornAudioRef.current.currentTime = 0;
+        hornAudioRef.current = null;
+      }
+
       playerRef.current?.destroy?.();
       playerRef.current = null;
     };
-  }, [playlistId]);
+  }, [playlistId, isMix]);
 
   const togglePlay = () => {
     const player = playerRef.current;
+
     if (!player || !ready) return;
 
     if (playing) {
@@ -244,17 +310,22 @@ function App() {
 
   const previousSong = () => {
     const player = playerRef.current;
+
     if (!player || !ready) return;
 
     if (playlistId) {
       player.previousVideo();
     } else {
-      player.seekTo(Math.max(0, (player.getCurrentTime?.() || 0) - 15), true);
+      player.seekTo(
+        Math.max(0, (player.getCurrentTime?.() || 0) - 15),
+        true,
+      );
     }
   };
 
   const nextSong = () => {
     const player = playerRef.current;
+
     if (!player || !ready) return;
 
     if (playlistId) {
@@ -272,21 +343,124 @@ function App() {
 
   const seek = (event) => {
     const player = playerRef.current;
+
     if (!player || !ready) return;
 
     const rect = event.currentTarget.getBoundingClientRect();
+
     const ratio = (event.clientX - rect.left) / rect.width;
+
     player.seekTo((player.getDuration?.() || 0) * ratio, true);
   };
 
   const toggleMute = () => {
     const player = playerRef.current;
+
     if (!player || !ready) return;
 
-    if (muted) player.unMute();
-    else player.mute();
+    if (muted) {
+      player.unMute();
+    } else {
+      player.mute();
+    }
 
     setMuted(!muted);
+  };
+
+  /*
+  |--------------------------------------------------------------------------
+  | HORN FUNCTION
+  |--------------------------------------------------------------------------
+  */
+
+  const playHorn = () => {
+    const player = playerRef.current;
+
+    if (!player || !ready) return;
+
+    /*
+     * Stop currently playing horn.
+     * This prevents multiple horns from overlapping
+     * when the user clicks repeatedly.
+     */
+    if (hornAudioRef.current) {
+      hornAudioRef.current.pause();
+      hornAudioRef.current.currentTime = 0;
+      hornAudioRef.current = null;
+    }
+
+    clearTimeout(hornTimeoutRef.current);
+
+    /*
+     * Select random horn
+     */
+    const randomHorn =
+      HORN_SOUNDS[Math.floor(Math.random() * HORN_SOUNDS.length)];
+
+    const horn = new Audio(randomHorn);
+
+    /*
+     * Full horn volume
+     */
+    horn.volume = 1;
+
+    /*
+     * Keep reference
+     */
+    hornAudioRef.current = horn;
+
+    /*
+     * Start visual animation
+     */
+    setHornActive(true);
+
+    /*
+     * Slow down current YouTube song.
+     *
+     * 0.6 = 60% playback speed.
+     */
+    try {
+      player.setPlaybackRate(0.6);
+    } catch (error) {
+      console.warn("Playback speed could not be changed:", error);
+    }
+
+    /*
+     * Play horn
+     */
+    horn
+      .play()
+      .then(() => {
+        console.log("Horn playing:", randomHorn);
+      })
+      .catch((error) => {
+        console.error("Horn playback failed:", error);
+
+        setHornActive(false);
+
+        try {
+          player.setPlaybackRate(1);
+        } catch {}
+      });
+
+    /*
+     * When horn finishes:
+     *
+     * 1. Stop dance animation
+     * 2. Restore music speed
+     * 3. Clear audio reference
+     */
+    horn.onended = () => {
+      setHornActive(false);
+
+      try {
+        player.setPlaybackRate(1);
+      } catch (error) {
+        console.warn("Could not restore playback speed:", error);
+      }
+
+      hornAudioRef.current = null;
+    };
   };
 
   const progress = duration ? (current / duration) * 100 : 0;
@@ -299,7 +473,9 @@ function App() {
           alt="Uttar Pradesh Parivahan Bus Interior"
         />
       </div>
+
       <div className="warm-overlay" />
+
       <div className="grain" />
 
       <header className="topbar">
@@ -315,18 +491,37 @@ function App() {
             <span className="service-icon">S</span>
             Spotify
           </button>
+
           <button className="service-chip red">
             <span className="service-icon">▶</span>
             YT Music
           </button>
+
           <button className="outline-chip">Playlists</button>
+
           <button className="outline-chip">Songs</button>
+
           <button className="outline-chip">↓ Install</button>
         </nav>
       </header>
 
       <section className="center-content">
-        <div className="location-label">उत्तर प्रदेश परिवहन</div>
+        {/* 
+          Added hornActive class only when horn is playing.
+          Existing location-label class remains untouched.
+        */}
+        <div
+          className={`location-label ${
+            hornActive ? "horn-location-dance" : ""
+          }`}
+        >
+          उत्तर प्रदेश परिवहन
+        </div>
+
+        {/* 
+          HORN OK PLEASE
+        */}
+       
 
         {/* <h1>
           सफ़र
@@ -338,9 +533,25 @@ function App() {
           BALLIA&nbsp;&nbsp;•&nbsp;&nbsp;SIKANDARPUR&nbsp;&nbsp;•&nbsp;&nbsp;
           BELTHARA ROAD&nbsp;&nbsp;•&nbsp;&nbsp;LUCKNOW
         </p> */}
+         <button
+          className={`horn-pill ${
+            hornActive ? "horn-pill-active" : ""
+          }`}
+          onClick={playHorn}
+          aria-label="Horn OK Please"
+        >
+          <span className="horn-symbol">📯</span>
+
+          <span className="horn-text">
+            HORN OK PLEASE
+          </span>
+
+          <span className="horn-status-dot" />
+        </button>
 
         <div className="memory-pill">
           <span className="memory-light" />
+
           <span>{busMemories[memoryIndex]}</span>
         </div>
       </section>
@@ -362,12 +573,15 @@ function App() {
       </button>
 
       <section
-        className={`cassette-player ${playing ? "play-state" : ""}`}
+        className={`cassette-player ${
+          playing ? "play-state" : ""
+        }`}
         aria-label="UP Parivahan bus driver playlist player"
       >
         <div className="cassette-window">
           <div className="cassette-label">
             <span>U.P. ROADWAYS</span>
+
             <strong>BUS DRIVER PLAYLIST</strong>
           </div>
 
@@ -375,6 +589,7 @@ function App() {
             <span className="reel left-reel">
               <i />
             </span>
+
             <span className="reel right-reel">
               <i />
             </span>
@@ -383,21 +598,37 @@ function App() {
 
         <div className="cassette-info">
           <strong>{songTitle}</strong>
+
           <span>{songArtist}</span>
 
-          <button className="progress" onClick={seek} aria-label="Seek song">
-            <span style={{ width: `${Math.min(100, progress)}%` }} />
+          <button
+            className="progress"
+            onClick={seek}
+            aria-label="Seek song"
+          >
+            <span
+              style={{
+                width: `${Math.min(100, progress)}%`,
+              }}
+            />
           </button>
 
           <div className="time">
             <span>{formatTime(current)}</span>
+
             <span>{formatTime(duration)}</span>
           </div>
         </div>
 
         <div className="cassette-controls">
-          <button onClick={previousSong} aria-label="Previous">
-            <SkipBack size={15} fill="currentColor" />
+          <button
+            onClick={previousSong}
+            aria-label="Previous"
+          >
+            <SkipBack
+              size={15}
+              fill="currentColor"
+            />
           </button>
 
           <button
@@ -406,18 +637,37 @@ function App() {
             aria-label="Play pause"
           >
             {playing ? (
-              <Pause size={17} fill="currentColor" />
+              <Pause
+                size={17}
+                fill="currentColor"
+              />
             ) : (
-              <Play size={17} fill="currentColor" />
+              <Play
+                size={17}
+                fill="currentColor"
+              />
             )}
           </button>
 
-          <button onClick={nextSong} aria-label="Next">
-            <SkipForward size={15} fill="currentColor" />
+          <button
+            onClick={nextSong}
+            aria-label="Next"
+          >
+            <SkipForward
+              size={15}
+              fill="currentColor"
+            />
           </button>
 
-          <button onClick={toggleMute} aria-label="Mute">
-            {muted ? <VolumeX size={14} /> : <Volume2 size={14} />}
+          <button
+            onClick={toggleMute}
+            aria-label="Mute"
+          >
+            {muted ? (
+              <VolumeX size={14} />
+            ) : (
+              <Volume2 size={14} />
+            )}
           </button>
         </div>
       </section>
@@ -433,6 +683,7 @@ function App() {
         >
           यह RD YouTube Mix है — पहला गाना चलेगा। असली fixed Next/Previous के
           लिए PL playlist URL दें.
+
           <span>×</span>
         </button>
       )}

@@ -213,7 +213,7 @@ button {
   margin-bottom: 22px;
   font-family: "Noto Sans Devanagari", serif;
   font-weight: 800;
-  font-size: 48px;
+  font-size: 65px;
   line-height: 1;
   letter-spacing: .18em;
   color: rgba(255, 238, 206, .95);
@@ -935,5 +935,362 @@ h1 span {
 
   .playlist-hint {
     display: none;
+  }
+}
+
+/* =========================================================
+   HORN OK PLEASE
+   Add this entire block at the END of your current CSS
+   ========================================================= */
+
+/* =========================================================
+   HORN OK PLEASE
+   ========================================================= */
+
+.horn-pill {
+  position: relative;
+
+  /* Memory pill ke upar */
+  margin-top: 22px;
+  margin-bottom: 8px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  /* Bigger pill */
+  gap: 11px;
+
+  min-width: 210px;
+  height: 48px;
+
+  padding: 0 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: 999px;
+
+ background:
+  linear-gradient(
+    135deg,
+    rgba(130, 58, 12, 0.92),
+    rgba(65, 25, 5, 0.88)
+  );
+
+  color: rgba(255, 255, 255, 0.94);
+
+  font-family: inherit;
+
+  /* Bigger and more visible text */
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.13em;
+
+  cursor: pointer;
+
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.horn-pill:hover {
+  transform: translateY(-2px) scale(1.025);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.17),
+      rgba(255, 255, 255, 0.055)
+    );
+
+  border-color: rgba(255, 255, 255, 0.30);
+
+  box-shadow:
+    0 12px 34px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13);
+}
+
+
+/* =========================================================
+   CLICK
+   ========================================================= */
+
+.horn-pill:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================================
+   HORN ICON
+   ========================================================= */
+
+.horn-symbol {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  width: 22px;
+  height: 22px;
+
+  flex-shrink: 0;
+
+  font-size: 18px;
+
+  filter:
+    grayscale(0.15)
+    drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
+
+  transition: transform 180ms ease;
+}
+
+
+/* =========================================================
+   HORN TEXT
+   ========================================================= */
+
+.horn-text {
+  font-size: 12px;
+  font-weight: 900;
+
+  letter-spacing: 0.13em;
+
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   SMALL STATUS DOT
+   ========================================================= */
+
+.horn-status-dot {
+  width: 7px;
+  height: 7px;
+
+  flex: 0 0 7px;
+
+  border-radius: 50%;
+
+  background: rgba(214, 181, 108, 0.95);
+
+  box-shadow:
+    0 0 7px rgba(214, 181, 108, 0.75),
+    0 0 14px rgba(214, 181, 108, 0.25);
+
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+
+/* =========================================================
+   ACTIVE HORN BUTTON
+   ========================================================= */
+
+.horn-pill-active {
+  border-color: rgba(255, 205, 105, 0.48);
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(210, 165, 75, 0.22),
+      rgba(255, 255, 255, 0.06)
+    );
+
+  animation:
+    horn-pill-pulse 320ms ease-in-out infinite alternate;
+}
+
+
+/* Active horn icon */
+
+.horn-pill-active .horn-symbol {
+  animation:
+    horn-icon-shake 180ms ease-in-out infinite alternate;
+}
+
+
+/* Active status dot */
+
+.horn-pill-active .horn-status-dot {
+  transform: scale(1.65);
+
+  background: #f1c36d;
+
+  box-shadow:
+    0 0 8px rgba(241, 195, 109, 0.95),
+    0 0 18px rgba(241, 195, 109, 0.65),
+    0 0 28px rgba(241, 195, 109, 0.25);
+}
+
+
+/* =========================================================
+   HORN BUTTON PULSE
+   ========================================================= */
+
+@keyframes horn-pill-pulse {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.045);
+  }
+}
+
+
+/* =========================================================
+   HORN ICON SHAKE
+   ========================================================= */
+
+@keyframes horn-icon-shake {
+  from {
+    transform: rotate(-8deg) scale(1);
+  }
+
+  to {
+    transform: rotate(8deg) scale(1.08);
+  }
+}
+
+
+/* =========================================================
+   UTTAR PRADESH PARIVAHAN DANCE
+   Only active while horn is playing
+   ========================================================= */
+
+.location-label.horn-location-dance {
+  position: relative;
+
+  z-index: 2;
+
+  transform-origin: center bottom;
+
+  animation:
+    up-parivahan-dance 300ms ease-in-out infinite,
+    up-parivahan-wiggle 720ms ease-in-out infinite;
+}
+
+
+/* =========================================================
+   MAIN UP / DOWN DANCE
+   ========================================================= */
+
+@keyframes up-parivahan-dance {
+  0% {
+    transform:
+      translateY(0)
+      scale(1);
+  }
+
+  20% {
+    transform:
+      translateY(-9px)
+      scale(1.035);
+  }
+
+  40% {
+    transform:
+      translateY(2px)
+      scale(0.985);
+  }
+
+  60% {
+    transform:
+      translateY(-7px)
+      scale(1.025);
+  }
+
+  80% {
+    transform:
+      translateY(1px)
+      scale(0.99);
+  }
+
+  100% {
+    transform:
+      translateY(0)
+      scale(1);
+  }
+}
+
+
+/* =========================================================
+   SUBTLE LEFT / RIGHT WIGGLE
+   ========================================================= */
+
+@keyframes up-parivahan-wiggle {
+  0% {
+    rotate: 0deg;
+  }
+
+  25% {
+    rotate: -1.4deg;
+  }
+
+  50% {
+    rotate: 0deg;
+  }
+
+  75% {
+    rotate: 1.4deg;
+  }
+
+  100% {
+    rotate: 0deg;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  .horn-pill {
+    min-width: 190px;
+    height: 45px;
+
+    margin-top: 18px;
+    margin-bottom: 8px;
+
+    padding: 0 17px;
+
+    gap: 9px;
+
+    font-size: 11px;
+  }
+
+  .horn-text {
+    font-size: 11px;
+    letter-spacing: 0.11em;
+  }
+
+  .horn-symbol {
+    width: 20px;
+    height: 20px;
+
+    font-size: 17px;
+  }
+
+  .horn-status-dot {
+    width: 6px;
+    height: 6px;
+
+    flex: 0 0 6px;
   }
 }
