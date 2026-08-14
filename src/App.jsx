@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 const YOUTUBE_PLAYLIST_URL =
-  "https://www.youtube.com/watch?v=cBGDDBHN22U&list=PLfdfb0LKtKKs8IcyIvtsf_FfmJU-1pbI1";
+  "https://youtube.com/playlist?list=PL-xfXH-OeuD-9SorMGuNPpPO1ubj7j8Qb&si=jQN8Y7GNOA5pf6LW";
 
 const FALLBACK_VIDEO_ID = "uIYFObB-yv0";
 
